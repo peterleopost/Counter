@@ -73,30 +73,58 @@ $month = date("M");
 $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
 /* =========================
-   REFERRERS
+   REFERRERS - IMPROVED WITH FALLBACKS
 ========================= */
 
-$raw_ref = $_SERVER['HTTP_REFERER'] ?? ($_GET['ref'] ?? 'direct');
-
+$raw_ref = null;
 $internal_ref = 'direct';
 $external_ref = null;
+
+// 1. Try HTTP_REFERER first
+if(!empty($_SERVER['HTTP_REFERER'])){
+    $raw_ref = $_SERVER['HTTP_REFERER'];
+}
+// 2. Try GET parameter as fallback
+elseif(!empty($_GET['ref'])){
+    $raw_ref = $_GET['ref'];
+}
+// 3. Try POST parameter as fallback
+elseif(!empty($_POST['ref'])){
+    $raw_ref = $_POST['ref'];
+}
+// 4. Default to direct
+else {
+    $raw_ref = 'direct';
+}
 
 if($raw_ref !== 'direct'){
 
     $parsed = parse_url($raw_ref);
 
-    $host = strtolower($parsed['host'] ?? '');
+    // Safely get host
+    $host = isset($parsed['host']) ? strtolower($parsed['host']) : '';
+    
+    // If no host, try to extract from path (for cases where URL parsing fails)
+    if(empty($host)){
+        $host = strtolower($raw_ref);
+        // Remove protocol if present
+        $host = preg_replace('#^https?://#', '', $host);
+        // Get domain part only
+        $host = explode('/', $host)[0];
+    }
+    
     $host = str_replace('www.', '', $host);
+    $path = isset($parsed['path']) ? $parsed['path'] : '/';
 
-    $path = $parsed['path'] ?? '/';
-
-    // INTERNAL
+    // INTERNAL DOMAINS
     if(
         strpos($host, 'jaah.nl') !== false ||
-        strpos($host, 'onlinemp3player.com') !== false
+        strpos($host, 'onlinemp3player.com') !== false ||
+        strpos($host, 'localhost') !== false ||
+        $_SERVER['HTTP_HOST'] === $host
     ){
 
-        if($path == ''){
+        if($path == '' || $path == '/'){
             $path = '/';
         }
 
@@ -106,7 +134,7 @@ if($raw_ref !== 'direct'){
             $internal_ref = '/';
         }
 
-    } else {
+    } else if(!empty($host)) {
 
         // EXTERNAL
         $external_ref = $host;
@@ -195,6 +223,7 @@ if(!isset($stats['unique']['year'][$month])) $stats['unique']['year'][$month]=0;
 
 if(!isset($stats['os'])) $stats['os'] = [];
 if(!isset($stats['devices'])) $stats['devices'] = [];
+if(!isset($stats['referrers'])) $stats['referrers'] = [];
 if(!isset($stats['external_referrers'])) $stats['external_referrers'] = [];
 
 /* =========================
@@ -218,12 +247,16 @@ if($unique){
    COUNTRIES
 ========================= */
 
+if(!isset($stats['countries'])) $stats['countries'] = [];
+
 $stats['countries'][$country] =
     ($stats['countries'][$country] ?? 0) + 1;
 
 /* =========================
    CITIES
 ========================= */
+
+if(!isset($stats['cities'])) $stats['cities'] = [];
 
 $stats['cities'][$city] =
     ($stats['cities'][$city] ?? 0) + 1;
@@ -271,6 +304,9 @@ file_put_contents('visitors.json', json_encode($visitors));
 ========================= */
 
 header("Content-Type:image/gif");
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
 
 echo base64_decode("R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==");
 
