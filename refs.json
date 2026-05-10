@@ -1,0 +1,26 @@
+{
+    "os": "Windows 10",
+    "hardware": "Laptop",
+    "referrers": [
+        {
+            "url": "direct",
+            "count": 47
+        },
+        {
+            "url": "/",
+            "count": 6
+        },
+        {
+            "url": "internal",
+            "count": 4
+        },
+        {
+            "url": "/2ehands/",
+            "count": 1
+        },
+        {
+            "url": "/ai/",
+            "count": 1
+        }
+    ]
+}
