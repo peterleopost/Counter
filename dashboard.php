@@ -52,10 +52,16 @@ $y_unique = $stats['unique']['year'];
 $countries = $stats['countries'];
 $cities = $stats['cities'];
 $refs = $stats['referrers'];
+$os = $stats['os'] ?? [];
+$devices = $stats['devices'] ?? [];
+$external_refs = $stats['external_referrers'] ?? [];
 
 arsort($countries);
 arsort($cities);
 arsort($refs);
+arsort($os);
+arsort($devices);
+arsort($external_refs);
 ?>
 
 <!DOCTYPE html>
@@ -149,7 +155,7 @@ body {
 
 /* CONTAINER */
 .container {
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 
@@ -187,10 +193,10 @@ canvas {
     width: 100% !important;
 }
 
-/* GRID BOXES */
+/* GRID BOXES - Now 6 columns */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(6, 1fr);
     gap: 24px;
     margin-top: 30px;
 }
@@ -219,6 +225,7 @@ canvas {
     font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.3px;
+    word-break: break-word;
 }
 
 .listbox {
@@ -252,6 +259,7 @@ canvas {
     border: 1px solid rgba(148, 163, 184, 0.1);
     transition: all 0.2s ease;
     font-size: 14px;
+    gap: 8px;
 }
 
 .item:hover {
@@ -314,7 +322,19 @@ canvas {
 }
 
 /* RESPONSIVE */
-@media (max-width: 768px) {
+@media (max-width: 1400px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
     .header h1 {
         font-size: 24px;
     }
@@ -376,6 +396,7 @@ canvas {
     <canvas id="y"></canvas>
 </div>
 
+<!-- 6 COLUMN GRID -->
 <div class="grid">
 
 <div class="box">
@@ -408,7 +429,7 @@ canvas {
 </div>
 
 <div class="box">
-    <h3>🔗 Referrers</h3>
+    <h3>🔗 Internal Referrers</h3>
     <div class="listbox">
         <?php foreach(array_slice($refs, 0, 15) as $r=>$n): ?>
         <div class="item">
@@ -416,6 +437,60 @@ canvas {
             <span><?= number_format($n) ?></span>
         </div>
         <?php endforeach; ?>
+    </div>
+</div>
+
+<div class="box">
+    <h3>💻 Operating Systems</h3>
+    <div class="listbox">
+        <?php if(!empty($os)): ?>
+            <?php foreach(array_slice($os, 0, 15) as $o=>$n): ?>
+            <div class="item">
+                <span><?= htmlspecialchars($o) ?></span>
+                <span><?= number_format($n) ?></span>
+            </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="item" style="justify-content: center; color: #94a3b8;">
+                <span>No data yet</span>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<div class="box">
+    <h3>📱 Devices</h3>
+    <div class="listbox">
+        <?php if(!empty($devices)): ?>
+            <?php foreach(array_slice($devices, 0, 15) as $d=>$n): ?>
+            <div class="item">
+                <span><?= htmlspecialchars($d) ?></span>
+                <span><?= number_format($n) ?></span>
+            </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="item" style="justify-content: center; color: #94a3b8;">
+                <span>No data yet</span>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<div class="box">
+    <h3>🌐 External Referrers</h3>
+    <div class="listbox">
+        <?php if(!empty($external_refs)): ?>
+            <?php foreach(array_slice($external_refs, 0, 15) as $r=>$n): ?>
+            <div class="item">
+                <span><?= htmlspecialchars($r) ?></span>
+                <span><?= number_format($n) ?></span>
+            </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="item" style="justify-content: center; color: #94a3b8;">
+                <span>No data yet</span>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
