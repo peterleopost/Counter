@@ -49,9 +49,9 @@ $m_unique = $stats['unique']['month'];
 $y_views = $stats['views']['year'];
 $y_unique = $stats['unique']['year'];
 
-$countries = $stats['countries'];
-$cities = $stats['cities'];
-$refs = $stats['referrers'];
+$countries = $stats['countries'] ?? [];
+$cities = $stats['cities'] ?? [];
+$refs = $stats['referrers'] ?? [];
 $os = $stats['os'] ?? [];
 $devices = $stats['devices'] ?? [];
 $external_refs = $stats['external_referrers'] ?? [];
@@ -628,7 +628,9 @@ function makeChart(id, labels, v, u) {
     });
 }
 
-// DAY CHART
+// ==========================================
+// DAY CHART (00:00 - 23:00)
+// ==========================================
 let hours = [];
 let dayViews = [];
 let dayUnique = [];
@@ -645,28 +647,25 @@ for(let i=0;i<24;i++){
 
 makeChart('h', hours, dayViews, dayUnique);
 
-// WEEK
-makeChart('w', ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-[
-<?= $w_views['Mon']??0 ?>,
-<?= $w_views['Tue']??0 ?>,
-<?= $w_views['Wed']??0 ?>,
-<?= $w_views['Thu']??0 ?>,
-<?= $w_views['Fri']??0 ?>,
-<?= $w_views['Sat']??0 ?>,
-<?= $w_views['Sun']??0 ?>
-],
-[
-<?= $w_unique['Mon']??0 ?>,
-<?= $w_unique['Tue']??0 ?>,
-<?= $w_unique['Wed']??0 ?>,
-<?= $w_unique['Thu']??0 ?>,
-<?= $w_unique['Fri']??0 ?>,
-<?= $w_unique['Sat']??0 ?>,
-<?= $w_unique['Sun']??0 ?>
-]);
+// ==========================================
+// WEEK CHART (Mon - Sun)
+// ==========================================
+let wViews = <?= json_encode($w_views) ?>;
+let wUnique = <?= json_encode($w_unique) ?>;
+let weekLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+let weekViewsData = [];
+let weekUniqueData = [];
 
-// MONTH
+weekLabels.forEach(day => {
+    weekViewsData.push(wViews[day] || 0);
+    weekUniqueData.push(wUnique[day] || 0);
+});
+
+makeChart('w', weekLabels, weekViewsData, weekUniqueData);
+
+// ==========================================
+// MONTH CHART (01 - 31)
+// ==========================================
 let mViews = <?= json_encode($m_views) ?>;
 let mUnique = <?= json_encode($m_unique) ?>;
 let monthLabels = [], monthViews = [], monthUnique = [];
@@ -678,36 +677,21 @@ for(let i=1;i<=31;i++){
 }
 makeChart('m', monthLabels, monthViews, monthUnique);
 
-// YEAR
-makeChart('y', ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-[
-<?= $y_views['Jan']??0 ?>,
-<?= $y_views['Feb']??0 ?>,
-<?= $y_views['Mar']??0 ?>,
-<?= $y_views['Apr']??0 ?>,
-<?= $y_views['May']??0 ?>,
-<?= $y_views['Jun']??0 ?>,
-<?= $y_views['Jul']??0 ?>,
-<?= $y_views['Aug']??0 ?>,
-<?= $y_views['Sep']??0 ?>,
-<?= $y_views['Oct']??0 ?>,
-<?= $y_views['Nov']??0 ?>,
-<?= $y_views['Dec']??0 ?>
-],
-[
-<?= $y_unique['Jan']??0 ?>,
-<?= $y_unique['Feb']??0 ?>,
-<?= $y_unique['Mar']??0 ?>,
-<?= $y_unique['Apr']??0 ?>,
-<?= $y_unique['May']??0 ?>,
-<?= $y_unique['Jun']??0 ?>,
-<?= $y_unique['Jul']??0 ?>,
-<?= $y_unique['Aug']??0 ?>,
-<?= $y_unique['Sep']??0 ?>,
-<?= $y_unique['Oct']??0 ?>,
-<?= $y_unique['Nov']??0 ?>,
-<?= $y_unique['Dec']??0 ?>
-]);
+// ==========================================
+// YEAR CHART (Jan - Dec)
+// ==========================================
+let yViews = <?= json_encode($y_views) ?>;
+let yUnique = <?= json_encode($y_unique) ?>;
+let yearLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let yearViewsData = [];
+let yearUniqueData = [];
+
+yearLabels.forEach(month => {
+    yearViewsData.push(yViews[month] || 0);
+    yearUniqueData.push(yUnique[month] || 0);
+});
+
+makeChart('y', yearLabels, yearViewsData, yearUniqueData);
 
 // AUTO REFRESH
 setInterval(function(){location.reload();}, 50000);
