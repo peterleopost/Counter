@@ -69,7 +69,8 @@ $day = date("D");
 $month_day = date("d");
 $month = date("M");
 
-$ua = $_GET['ua'] ?? '';
+// GET USER-AGENT FROM SERVER (NOT FROM GET)
+$ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
 /* =========================
    REFERRERS
@@ -191,6 +192,10 @@ if(!isset($stats['unique']['month'][$month_day])) $stats['unique']['month'][$mon
 
 if(!isset($stats['views']['year'][$month])) $stats['views']['year'][$month]=0;
 if(!isset($stats['unique']['year'][$month])) $stats['unique']['year'][$month]=0;
+
+if(!isset($stats['os'])) $stats['os'] = [];
+if(!isset($stats['devices'])) $stats['devices'] = [];
+if(!isset($stats['external_referrers'])) $stats['external_referrers'] = [];
 
 /* =========================
    VIEWS
