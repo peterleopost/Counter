@@ -164,7 +164,7 @@ body {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.4) 100%);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(148, 163, 184, 0.2);
-    height: 350px;
+    height: 400px;
     margin-bottom: 24px;
     border-radius: 16px;
     padding: 20px;
@@ -348,7 +348,7 @@ canvas {
     }
 
     .chartbox {
-        height: 300px;
+        height: 350px;
     }
 }
 </style>
@@ -620,7 +620,11 @@ function makeChart(id, labels, v, u) {
                     grid: { display: false },
                     ticks: {
                         color: '#94a3b8',
-                        font: { size: 12, weight: 500 }
+                        font: { size: 13, weight: 500 },
+                        maxRotation: 45,
+                        minRotation: 0,
+                        autoSkip: false,
+                        padding: 8
                     }
                 }
             }
